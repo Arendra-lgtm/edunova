@@ -11,6 +11,7 @@ use App\Filament\Resources\AcademicYears\Schemas\AcademicYearInfolist;
 use App\Filament\Resources\AcademicYears\Tables\AcademicYearsTable;
 use App\Models\AcademicYear;
 use BackedEnum;
+Use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -22,11 +23,11 @@ class AcademicYearResource extends Resource
 
     protected static ?string $navigationLabel = 'Academic Years';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Academic';
+    protected static string|UnitEnum|null $navigationGroup = 'Academic';
 
     protected static ?int $navigationSort = 1;
 
-    protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedAcademicCap;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedAcademicCap;
 
     protected static ?string $recordTitleAttribute = 'name';
 
