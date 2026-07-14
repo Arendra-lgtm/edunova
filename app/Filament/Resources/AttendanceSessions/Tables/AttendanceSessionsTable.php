@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Schedules\Tables;
+namespace App\Filament\Resources\AttendanceSessions\Tables;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -10,50 +10,31 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class SchedulesTable
+class AttendanceSessionsTable
 {
     public static function configure(Table $table): Table
     {
         return $table
             ->columns([
-                TextColumn::make('academicYear.name')
-                    ->label('Academic Year')
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('semester.name')
-                    ->label('Semester')
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('teacher.name')
+                TextColumn::make('schedule.teacher.name')
                     ->label('Teacher')
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('subject.name')
+                TextColumn::make('schedule.subject.name')
                     ->label('Subject')
                     ->sortable()
-                    ->searchable(),
-                TextColumn::make('schoolClass.full_name')
-                    ->label('School Class'),
-                TextColumn::make('day')
-                    ->label('Day')
+                    ->searchable(),    
+                TextColumn::make('schedule.schoolClass.full_name')
+                    ->label('Class'),    
+                TextColumn::make('attendance_date')
+                    ->date('d M Y')
+                    ->sortable(),
+                TextColumn::make('meeting_number')
+                    ->label('Meeting')
                     ->badge()
-                    ->sortable()
-                    ->searchable(),
-                TextColumn::make('start_time')
-                    ->label('Start')
-                    ->time('H:i')
-                    ->sortable(),
-                TextColumn::make('end_time')
-                    ->label('End')
-                    ->time('H:i')
-                    ->sortable(),
-                TextColumn::make('room')
-                    ->label('Room')
-                    ->placeholder('-')
-                    ->sortable()
-                    ->searchable(),
-                IconColumn::make('is_active')
-                    ->label('Active')
+                    ->formatStateUsing(fn ($state) => "Meeting {$state}"),
+                IconColumn::make('is_closed')
+                    ->label('Closed')
                     ->boolean(),
                 TextColumn::make('created_at')
                     ->dateTime('d M Y H:i')

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Schedule extends Model
 {
@@ -53,4 +54,35 @@ class Schedule extends Model
     {
         return $this->belongsTo(SchoolClass::class);
     }
+
+    public function attendanceSessions(): HasMany
+    {
+        return $this->hasMany(AttendanceSession::class);
+    }
+
+    public function getTitleAttribute(): string
+    {
+        return sprintf(
+           '%s - %s (%s)',
+           $this->teacher->name,
+           $this->subject->name,
+           $this->schoolClass->full_name,
+    );
+    }
+
+    public function getTimeRangeAttribute(): string
+    {
+        return "{$this->start_time} - {$this->end_time}";
+    }
+
+    public function getFullScheduleAttribute(): string
+    {
+        return sprintf(
+           '%s | %s | %s | %s',
+           $this->day,
+           $this->time_range,
+           $this->subject->name,
+           $this->schoolClass->full_name,
+    );
+    } 
 }

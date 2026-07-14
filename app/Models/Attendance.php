@@ -14,13 +14,6 @@ class Attendance extends Model
         'note',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'status' => 'string',
-        ];
-    }
-
     public function attendanceSession(): BelongsTo
     {
         return $this->belongsTo(AttendanceSession::class);
