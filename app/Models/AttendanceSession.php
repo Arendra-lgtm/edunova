@@ -32,4 +32,25 @@ class AttendanceSession extends Model
     {
         return $this->hasMany(Attendance::class);
     }
+
+    public function getFullSessionAttribute(): string
+    {
+    return sprintf(
+        'Meeting %d - %s - %s (%s)',
+        $this->meeting_number,
+        $this->schedule->subject->name,
+        $this->schedule->schoolClass->full_name,
+        $this->attendance_date->format('d M Y')
+    );
+    }
+
+    public function getStudentsAttribute()
+    {
+    return $this->schedule
+        ->schoolClass
+        ->students()
+        ->where('is_active', true)
+        ->orderBy('name')
+        ->get();
+    }
 }
