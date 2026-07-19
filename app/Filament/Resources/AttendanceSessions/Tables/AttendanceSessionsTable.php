@@ -36,9 +36,11 @@ class AttendanceSessionsTable
                     ->label('Meeting')
                     ->badge()
                     ->formatStateUsing(fn ($state) => "Meeting {$state}"),
-                IconColumn::make('is_closed')
-                    ->label('Closed')
-                    ->boolean(),
+                TextColumn::make('is_closed')
+                    ->label('Status')
+                    ->badge()
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Closed' : 'Open')
+                    ->color(fn (bool $state): string => $state ? 'danger' : 'success'),
                 TextColumn::make('created_at')
                     ->dateTime('d M Y H:i')
                     ->sortable()
@@ -68,6 +70,7 @@ class AttendanceSessionsTable
                         ->label('Generate Attendance')
                         ->icon('heroicon-o-users')
                         ->color('success')
+                        ->disabled(fn ($record) => $record->is_closed)
                         ->requiresConfirmation()
                         ->modalHeading('Generate attendance sheet')
                         ->modalDescription('This will create attendance records for all active students in this class.')
@@ -92,14 +95,36 @@ class AttendanceSessionsTable
                                 }
                             }
 
+                Notification::make()
+                        ->title('Attendance generated')
+                        ->body("{$created} attendance records created successfully.")
+                        ->success()
+                        ->send();
+                }),
+
+                EditAction::make(
+
+                ),
+                Action::make('closeSession')
+                        ->label('Close Session')
+                        ->icon('heroicon-o-lock-closed')
+                        ->color('warning')
+                        ->visible(fn ($record) => ! $record->is_closed)
+                        ->requiresConfirmation()
+                        ->modalHeading('Close this attendance session?')
+                        ->modalDescription('After closing, attendance records can no longer be edited.')
+                        ->action(function ($record) {
+
+                            $record->update([
+                                'is_closed' => true,
+                            ]);
+
                             Notification::make()
-                                ->title('Attendance generated')
-                                ->body("{$created} attendance records created successfully.")
+                                ->title('Session closed')
+                                ->body('Attendance session has been locked successfully.')
                                 ->success()
                                 ->send();
                         }),
-
-                            EditAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

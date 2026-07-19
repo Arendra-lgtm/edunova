@@ -3,19 +3,18 @@
 namespace App\Filament\Resources\Attendances\Pages;
 
 use App\Filament\Resources\Attendances\AttendanceResource;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
 
 class EditAttendance extends EditRecord
 {
     protected static string $resource = AttendanceResource::class;
 
-    protected function getHeaderActions(): array
+    public function mount(int|string $record): void
     {
-        return [
-            ViewAction::make(),
-            DeleteAction::make(),
-        ];
+        parent::mount($record);
+
+        if ($this->record->attendanceSession->is_closed) {
+            abort(403, 'Attendance session is already closed.');
+        }
     }
 }

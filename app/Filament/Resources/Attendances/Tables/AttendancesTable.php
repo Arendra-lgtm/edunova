@@ -63,7 +63,8 @@ class AttendancesTable
             ])
             ->recordActions([
                 ViewAction::make(),
-                EditAction::make(),
+                EditAction::make()
+                    ->visible(fn ($record) => ! $record->attendanceSession->is_closed),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
