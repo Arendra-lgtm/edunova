@@ -9,6 +9,9 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use App\Models\Attendance;
+use Filament\Actions\Action;
+use Filament\Notifications\Notification;
 
 class AttendanceSessionsTable
 {
@@ -50,7 +53,53 @@ class AttendanceSessionsTable
             ])
             ->recordActions([
                 ViewAction::make(),
-                EditAction::make(),
+
+                 Action::make('openAttendance')
+                        ->label('Open Attendance')
+                        ->icon('heroicon-o-arrow-top-right-on-square')
+                        ->color('info')
+                        ->url(fn ($record) =>
+                            route('filament.admin.resources.attendances.index', [
+                                'tableFilters[attendance_session_id][value]' => $record->id,
+                            ])
+                        ),
+
+                Action::make('generateAttendance')
+                        ->label('Generate Attendance')
+                        ->icon('heroicon-o-users')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->modalHeading('Generate attendance sheet')
+                        ->modalDescription('This will create attendance records for all active students in this class.')
+                        ->action(function ($record) {
+
+                            $created = 0;
+
+                            foreach ($record->students as $student) {
+
+                                $attendance = Attendance::firstOrCreate(
+                                    [
+                                        'attendance_session_id' => $record->id,
+                                        'student_id' => $student->id,
+                                    ],
+                                    [
+                                        'status' => 'present',
+                                    ]
+                                );
+
+                                if ($attendance->wasRecentlyCreated) {
+                                    $created++;
+                                }
+                            }
+
+                            Notification::make()
+                                ->title('Attendance generated')
+                                ->body("{$created} attendance records created successfully.")
+                                ->success()
+                                ->send();
+                        }),
+
+                            EditAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

@@ -31,13 +31,24 @@ class AttendancesTable
                     ->label('Student')
                     ->searchable(),
                 TextColumn::make('status')
+                    ->label('Status')
                     ->badge()
-                    ->colors([
-                        'success' => 'present',
-                        'warning' => ['permission', 'sick'],
-                        'danger' => 'absent',
-                        'info' => 'dispensation',
-                    ]),
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'present' => 'Present',
+                        'permission' => 'Permission',
+                        'sick' => 'Sick',
+                        'absent' => 'Absent',
+                        'dispensation' => 'Dispensation',
+                        default => ucfirst($state),
+                    })
+                    ->color(fn (string $state): string => match ($state) {
+                        'present' => 'success',
+                        'permission' => 'warning',
+                        'sick' => 'info',
+                        'absent' => 'danger',
+                        'dispensation' => 'gray',
+                        default => 'gray',
+                    }),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
