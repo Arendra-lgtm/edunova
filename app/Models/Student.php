@@ -42,4 +42,22 @@ class Student extends Model
     {
     return $this->hasMany(Attendance::class);
     }
+
+    public function getAttendanceSummaryAttribute(): array
+    {
+    return [
+        'present' => $this->attendances()->where('status', 'present')->count(),
+        'sick' => $this->attendances()->where('status', 'sick')->count(),
+        'permission' => $this->attendances()->where('status', 'permission')->count(),
+        'absent' => $this->attendances()->where('status', 'absent')->count(),
+        'dispensation' => $this->attendances()->where('status', 'dispensation')->count(),
+    ];
+    }
+
+    public function getTotalAbsentAttribute(): int
+    {
+    return $this->attendances()
+        ->where('status', 'absent')
+        ->count();
+    }
 }
