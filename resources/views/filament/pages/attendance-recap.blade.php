@@ -10,18 +10,49 @@
     </form>
 
     <div class="mt-6 p-4 bg-gray-900 rounded-xl border border-gray-700">
-        <h2 class="text-lg font-bold mb-2">Filter Result</h2>
+        <h2 class="text-lg font-bold mb-4">Filter Result</h2>
 
-        <p><strong>Class:</strong>
-            {{ $data['school_class_id'] ?? 'All Classes' }}
-        </p>
+        <div class="space-y-2 text-sm">
+            @php
+                    $selectedClass = $this->classId
+                        ? \App\Models\SchoolClass::find($this->classId)
+                        : null;
+                @endphp
 
-        <p><strong>Start:</strong>
-            {{ $data['start_date'] ?? '-' }}
-        </p>
+                <p>
+                    <span class="font-semibold text-gray-300">Class:</span>
+                    <span class="text-white">
+                        {{
+                            $selectedClass
+                                ? trim(
+                                    ($selectedClass->level ?? '') . ' ' .
+                                    ($selectedClass->major ?? '') . ' ' .
+                                    ($selectedClass->name ?? '')
+                                )
+                                : 'All Classes'
+                        }}
+                    </span>
+                </p>
+            <p>
+                <span class="font-semibold text-gray-300">Subject:</span>
+                <span class="text-white">
+                    {{
+                        $this->subjectId
+                            ? \App\Models\Subject::find($this->subjectId)?->name
+                            : 'All Subjects'
+                    }}
+                </span>
+            </p>
 
-        <p><strong>End:</strong>
-            {{ $data['end_date'] ?? '-' }}
-        </p>
+            <p>
+                <span class="font-semibold text-gray-300">Start:</span>
+                <span class="text-white">{{ $this->startDate }}</span>
+            </p>
+
+            <p>
+                <span class="font-semibold text-gray-300">End:</span>
+                <span class="text-white">{{ $this->endDate }}</span>
+            </p>
+        </div>
     </div>
 </x-filament-panels::page>
